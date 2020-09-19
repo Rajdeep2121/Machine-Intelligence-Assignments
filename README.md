@@ -1,5 +1,12 @@
 # Machine-Intelligence-Assignments
 
-Every assignment is a new branch.<br>
+College Assignments for Machine Intelligence course.<br>
 
-> Always remember to 'git pull'
+
+Contributors:
+- [Shaashwat Jain](https://github.com/shaashwatjain)
+- [Rajdeep Sengupta](https://github.com/Rajdeep2121)
+- [Srishti Sachan](https://github.com/SrishtiSachan)
+
+
+Every assignment is a new branch.
