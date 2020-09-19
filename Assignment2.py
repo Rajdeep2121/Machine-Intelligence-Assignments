@@ -1,3 +1,4 @@
+import copy
 
 def A_star_Traversal(
     #add your parameters 
@@ -6,12 +7,35 @@ def A_star_Traversal(
 
     return l
 
-def UCS_Traversal(
-    #add your parameters 
-):
+def UCS_Traversal(cost, start_point, goals):
     l = []
 
+    l.append([0,[start_point]])     
+    visited = set()
+    visited.add(start_point)
+    while(l!=[]):
+        l.sort(key=lambda x:x[0])   
+        if(l[0][1][-1] in goals):
+            return l[0][1]
+        children = findChildren(l,cost,visited)
+        path = l[0][1]
+        min_cost = l[0][0]
+        del l[0]
+        for i in reversed(children):
+            final_cost = min_cost + cost[path[-1]][i]
+            final_path = copy.deepcopy(path)
+            final_path.append(i)
+            l.insert(0,[final_cost, final_path])
+
     return l
+
+def findChildren(l,cost,visited):
+    x = []
+    lastNode = l[0][1][-1]
+    for i in range(1,len(cost[lastNode])):
+        if(cost[lastNode][i]!=0 and cost[lastNode][i]!=-1 and i not in visited):
+            x.append(i)
+    return x
 
 def DFS_Traversal(
     #add your parameters 
@@ -51,9 +75,7 @@ def tri_traversal(cost, heuristic, start_point, goals):
     t1 = DFS_Traversal(
     #send whatever parameters you require 
 )
-    t2 = UCS_Traversal(
-    #send whatever parameters you require 
-)
+    t2 = UCS_Traversal(cost, start_point, goals)
     t3 = A_star_Traversal(
     #send whatever parameters you require 
 )
