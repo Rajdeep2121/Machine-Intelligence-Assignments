@@ -1,10 +1,45 @@
+from queue import PriorityQueue
 import copy
 
 def A_star_Traversal(
-    #add your parameters 
+    cost, heuristic, start_point, goals
 ):
     l = []
+    
+    heu_len = len(heuristic)
+    q = PriorityQueue()
+    v = []
+    for i in range(heu_len):
+        v.append(0)
 
+    path = [start_point]
+    q.put((heuristic[start_point],start_point,path))
+    
+    while not q.empty():
+        state = q.get()
+        # print(state)
+        path = state[2]
+        v[state[1]] = state[0]
+        if state[1] in goals:
+            l = path
+            break
+        traverser = state[1]
+        for i in range(0,heu_len): 
+            if(cost[traverser][i] > 0):
+                est_heu_sub = state[0] - heuristic[traverser]
+                est_cost = est_heu_sub + cost[traverser][i] + heuristic[i]
+                path.append(i)
+                if v[i] == 0:
+                    temp = []
+                    for num in path:
+                        temp.append(num)
+                    q.put((est_cost,i,temp))
+                    
+                    #print(est_cost,i,path)
+                elif v[i] > est_cost and est_cost > 0:
+                    v[i] = est_cost
+                path.pop()
+    
     return l
 
 def UCS_Traversal(cost, start_point, goals):
@@ -76,9 +111,7 @@ def tri_traversal(cost, heuristic, start_point, goals):
     #send whatever parameters you require 
 )
     t2 = UCS_Traversal(cost, start_point, goals)
-    t3 = A_star_Traversal(
-    #send whatever parameters you require 
-)
+    t3 = A_star_Traversal(cost, heuristic, start_point, goals)
 
     l.append(t1)
     l.append(t2)
