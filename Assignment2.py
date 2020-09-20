@@ -72,11 +72,23 @@ def findChildren(l,cost,visited):
             x.append(i)
     return x
 
-def DFS_Traversal(
-    #add your parameters 
-):
+def DFS_Traversal(cost, start_point, goals):
     l = []
-
+    visited = [0 for i in range(len(cost)-1)]
+    visited[start_point]= 1
+    i= start_point
+    j= start_point
+    l.append(start_point)
+    while(i not in goals):
+        j= start_point
+        while(cost[i][j]==0 or cost[i][j]==-1):
+            j=j+1
+        while(visited[j]==1 or cost[i][j]==0 or cost[i][j]==-1):
+            j=j+1
+        if visited[j]!=1:
+            i=j
+            visited[j]=1
+            l.append(j)
     return l
 
 
@@ -107,9 +119,7 @@ NOTE : you are allowed to write other helper functions that you can call in the 
 def tri_traversal(cost, heuristic, start_point, goals):
     l = []
 
-    t1 = DFS_Traversal(
-    #send whatever parameters you require 
-)
+    t1 = DFS_Traversal(cost, start_point, goals)
     t2 = UCS_Traversal(cost, start_point, goals)
     t3 = A_star_Traversal(cost, heuristic, start_point, goals)
 
