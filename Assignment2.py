@@ -74,7 +74,7 @@ def findChildren(l,cost,visited):
 
 def DFS_Traversal(cost, start_point, goals):
     l = []
-    visited = [0 for i in range(len(cost)-1)]
+    visited = [0 for i in range(len(cost))]
     visited[start_point]= 1
     i= start_point
     j= start_point
