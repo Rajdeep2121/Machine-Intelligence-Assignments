@@ -15,6 +15,7 @@ def A_star_Traversal(
     q.put((heuristic[start_point],start_point,path))
     
     while not q.empty():
+        #print(q.queue)
         state = q.get()
         
         path = state[2]
@@ -45,31 +46,35 @@ def UCS_Traversal(cost, start_point, goals):
     l = []
 
     l.append([0,[start_point]])     
-    visited = set()
-    visited.add(start_point)
+    visited = []
+    visited.append(start_point)
     while(l!=[]):
-        l.sort(key=lambda x:x[0]) 
-        dup = 0
-        min_cost_dup = l[0][0] 
-        for i in range(1,len(l)):
-            if(l[i][0]==min_cost_dup):
-                dup+=1
+        l.sort(key=lambda y:y[0]) 
         if(l[0][1][-1] in goals):
+            dup = 0
+            min_cost_dup = l[0][0] 
+            for i in range(1,len(l)):
+                if(l[i][0]==min_cost_dup):
+                    dup+=1
             if(dup>0):
                 ll = [i for i in l if i[0]==min_cost_dup]
-                ll.sort(key=lambda x: x[1])
+                ll.sort(key=lambda r: r[1])
+                for i in ll:
+                    if(i[1][-1] in goals):
+                        return i[1]
                 return ll[0][1]
             else:
                 return l[0][1]
-        children = findChildren(l,cost,visited)
         path = l[0][1]
         min_cost = l[0][0]
+        children = findChildren(l,cost,visited)
         del l[0]
         for i in reversed(children):
             final_cost = min_cost + cost[path[-1]][i]
             final_path = copy.deepcopy(path)
             final_path.append(i)
             l.insert(0,[final_cost, final_path])
+            visited.append(i)
 
     return l
 
@@ -77,7 +82,8 @@ def findChildren(l,cost,visited):
     x = []
     lastNode = l[0][1][-1]
     for i in range(1,len(cost[lastNode])):
-        if(cost[lastNode][i]!=0 and cost[lastNode][i]!=-1 and i not in visited):
+        local_visited = l[0][1]
+        if(cost[lastNode][i]!=0 and cost[lastNode][i]!=-1 and i not in local_visited):
             x.append(i)
     return x
 
@@ -85,24 +91,22 @@ def DFS_Traversal(cost, start_point, goals):
     stack =[]
     path=[]
     visited= [0 for i in range(0,len(cost[0]))]
-    visited[start_point]=1
-    stack.append(start_point)
+    stack.append((start_point,[start_point]))
+    if start_point in goals:
+        return [start_point]
     i= start_point
-    while(i not in goals and stack):       
-        i= stack.pop()
-        visited[i]=1
-        path.append(i)
-        j= len(cost[i])-1
-        while j>0:
-            if visited[j]==1:
-                pass 
-            elif cost[i][j]<=0:
-                pass
-            else:
-                stack.append(j)
+    while((i not in goals) and len(stack)):  
+        #print(stack)     
+        i,arr= stack.pop()
+        visited[i] = 1
+        path = arr
+        j= len(cost[i]) - 1
+
+        while j>=0:
+            if visited[j] == 0 and cost[i][j] > 0:
+                stack.append((j,arr+[j]))
             j=j-1
-    if i == start_point:
-        path.append(start_point)   
+   
     if path[-1] not in goals:
         path = []     
     return path
