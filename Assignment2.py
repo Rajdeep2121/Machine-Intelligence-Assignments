@@ -5,21 +5,21 @@ def A_star_Traversal(
     cost, heuristic, start_point, goals
 ):
     l = []
-    
     heu_len = len(heuristic)
     q = PriorityQueue()
     v = []
     for i in range(heu_len):
         v.append(0)
-
+    
     path = [start_point]
     q.put((heuristic[start_point],start_point,path))
     
     while not q.empty():
         state = q.get()
-        # print(state)
+        
         path = state[2]
-        v[state[1]] = state[0]
+        if v[state[1]] == 0:
+            v[state[1]] = state[0]
         if state[1] in goals:
             l = path
             break
@@ -29,17 +29,16 @@ def A_star_Traversal(
                 est_heu_sub = state[0] - heuristic[traverser]
                 est_cost = est_heu_sub + cost[traverser][i] + heuristic[i]
                 path.append(i)
+                temp = []
+                for num in path:
+                    temp.append(num)
                 if v[i] == 0:
-                    temp = []
-                    for num in path:
-                        temp.append(num)
                     q.put((est_cost,i,temp))
-                    
                     #print(est_cost,i,path)
-                elif v[i] > est_cost and est_cost > 0:
+                elif v[i] >= est_cost and est_cost > 0:
+                    q.put((est_cost,i,temp))
                     v[i] = est_cost
                 path.pop()
-    
     return l
 
 def UCS_Traversal(cost, start_point, goals):
@@ -83,23 +82,30 @@ def findChildren(l,cost,visited):
     return x
 
 def DFS_Traversal(cost, start_point, goals):
-    l = []
-    visited = [0 for i in range(len(cost))]
-    visited[start_point]= 1
+    stack =[]
+    path=[]
+    visited= [0 for i in range(0,len(cost[0]))]
+    visited[start_point]=1
+    stack.append(start_point)
     i= start_point
-    j= start_point
-    l.append(start_point)
-    while(i not in goals):
-        j= start_point
-        while(cost[i][j]==0 or cost[i][j]==-1):
-            j=j+1
-        while(visited[j]==1 or cost[i][j]==0 or cost[i][j]==-1):
-            j=j+1
-        if visited[j]!=1:
-            i=j
-            visited[j]=1
-            l.append(j)
-    return l
+    while(i not in goals and stack):       
+        i= stack.pop()
+        visited[i]=1
+        path.append(i)
+        j= len(cost[i])-1
+        while j>0:
+            if visited[j]==1:
+                pass 
+            elif cost[i][j]<=0:
+                pass
+            else:
+                stack.append(j)
+            j=j-1
+    if i == start_point:
+        path.append(start_point)   
+    if path[-1] not in goals:
+        path = []     
+    return path
 
 
 '''
