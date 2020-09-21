@@ -49,9 +49,19 @@ def UCS_Traversal(cost, start_point, goals):
     visited = set()
     visited.add(start_point)
     while(l!=[]):
-        l.sort(key=lambda x:x[0])   
+        l.sort(key=lambda x:x[0]) 
+        dup = 0
+        min_cost_dup = l[0][0] 
+        for i in range(1,len(l)):
+            if(l[i][0]==min_cost_dup):
+                dup+=1
         if(l[0][1][-1] in goals):
-            return l[0][1]
+            if(dup>0):
+                ll = [i for i in l if i[0]==min_cost_dup]
+                ll.sort(key=lambda x: x[1])
+                return ll[0][1]
+            else:
+                return l[0][1]
         children = findChildren(l,cost,visited)
         path = l[0][1]
         min_cost = l[0][0]
