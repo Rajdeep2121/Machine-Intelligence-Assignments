@@ -5,11 +5,84 @@ Design of a Neural Network from scratch
 Mention hyperparameters used and describe functionality in detail in this space
 - carries 1 mark
 '''
+# IMPORTING MODULES
+import numpy as np		# for mathematical calculations and handling array operations 
+import pandas as pd 	# for reading and handling data
+from sklearn.model_selection import train_test_split	# to split dataset into test set and training set
+
+# NORMALISING DATAFRAME
+def normalize(df):
+		result = df.copy()
+		for feature_name in df.columns:
+				max_value = df[feature_name].max()
+				min_value = df[feature_name].min()
+				if min_value == max_value:
+						result[feature_name] = df[feature_name] / max_value
+				else:
+						result[feature_name] = (
+								df[feature_name] - min_value) / (max_value - min_value)
+		return result
+
+def sigmoid(x):
+		return 1 / (1 + np.exp(-x))
+
+
+def sigmoidDerivative(x):
+		o = sigmoid(x)
+		return o * (1 - o)
+
+# PREPROCESSING THE DATASET
+def preprocessData(df):
+	# DROPPING ROWS WITH NAN VALUES
+	df.dropna(axis=0, inplace=True)     # removing rows with NaN values
+
+	# SHUFFLING ROWS TO PREVENT ANY SAMPLING ERRORS
+	df = df.sample(frac = 1)
+
+	# NORMALIZING COLUMN VALUES
+	new_df = normalize(df)
+	df = new_df
+
+	# PREPARING INPUT AND OUTPUT DATA 
+	community = df['Community'].tolist()
+	age = df['Age'].tolist()
+	weight = df['Weight'].tolist()
+	delphase = df['Delivery phase'].tolist()
+	hb = df['HB'].tolist()
+	ifa = df['IFA'].tolist()
+	bp = df['BP'].tolist()
+	education = df['Education'].tolist()
+	residence = df['Residence'].tolist()
+	y = df['Result'].tolist()
+
+	X = []
+	for i in range(df.shape[0]):
+			X.append([community[i], age[i], weight[i], delphase[i],
+								hb[i], ifa[i], bp[i], education[i], residence[i]])
+	return X, y
+
 
 class NN:
+	def __init__(self, layers=[9, 2, 1]):
+		self.weights = []
+		self.biases = []
+		
+		# INITIALIZING THE WEIGHTS AND BIASES MATRIX WITH RANDOM VALUES
+		for i in range(len(self.layers) -1):
+			self.weights.append(np.random.randn(self.layers[i+1], self.layers[i]))
+			self.biases.append(np.random.randn(self.layers[i+1], 1))
 
-	''' X and Y are dataframes '''
-	
+	def forwardProp(self, X):
+		sumLayer = []
+		outputLayer = [X]
+
+		# FINDING THE FEEDFORWARD OUTPUT AND SUM OF EVERY LAYER
+		for i in range(len(self.weights)):
+			sumLayer.append(np.dot(self.weights[i], outputLayer[-1]) + self.biases[i])
+			out = sigmoid(sumLayer[-1])
+			outputLayer.append(out)
+		return sumLayer, outputLayer
+
 	def fit(self,X,Y):
 		'''
 		Function that trains the neural network by taking x_train and y_train samples as input
@@ -73,7 +146,15 @@ class NN:
 			
 
 
-	
+# ----------------MAIN CODE----------------
 
+# READING DATA
+data = pd.read_csv('LBW_Dataset.csv')
+df = pd.DataFrame(data)
 
+X, y = preprocessData(df)
 
+# SPLITTING DATASET INTO TESTING AND TRAINING SET 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+# MODEL CREATION
